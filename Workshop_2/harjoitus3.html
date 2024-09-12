@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <h1>Otsikko 1</h1>
+<body>
+   <p> selaimen tunnistus...</p>
+
+<script>
+let selain = navigator.userAgent;
+if (selain.indexOf("Firefox") >= 0) {
+    location.href = "https://www.mozilla.org";
+} //if
+else {
+    location.href = "h3_ei_mozilla.html";
+}//else
+</script>
+</body>
+</html>
