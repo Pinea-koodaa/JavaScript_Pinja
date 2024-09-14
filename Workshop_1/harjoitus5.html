@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        var arr = [];
+        for (var i=0; i<15; i++) {
+        let rndnumero = Math.floor(Math.random() * 100) + 1; //tehää random numero 1 -> 100
+        arr.push(rndnumero); //lisää taulukkoon
+        console.log("Luotu numero: " + rndnumero); //tulostaa consoliin
+        document.write("<p>Luotu numero: " + rndnumero + "</p>"); //tulostaa sivulle
+        } 
+        
+        console.log (arr);
+
+    </script>
+</body>
+</html>
