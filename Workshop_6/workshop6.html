@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Workshop 6</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css">
+
+    <script>
+        // Tämä funktio tallentaa käyttäjän syöttämät tiedot localStorageen
+        function getData() {
+    var destination = document.getElementById("destination").value; // Hae määränpää
+    var arrival = document.getElementById("arrival").value; // Hae saapumispäivämäärä
+    var services = []; // Tyhjennetään palvelut-taulukko
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked'); // Hae valitut palvelut
+    checkboxes.forEach((checkbox) => {
+        services.push(checkbox.value); // Lisää valitut palvelut taulukkoon
+    });
+    
+    // Tallenna tiedot localStorageen
+    localStorage.setItem("destination", destination);
+    localStorage.setItem("arrival", arrival);
+    localStorage.setItem("services", JSON.stringify(services));
+    
+    alert("Data saved to localStorage!"); // Ilmoita käyttäjälle
+
+    loadData(); // Lataa ja näytä tiedot heti
+}
+
+
+        function loadData() {
+    var destination = localStorage.getItem("destination"); // Hae määränpää
+    var arrival = localStorage.getItem("arrival"); // Hae saapumispäivämäärä
+    var services = JSON.parse(localStorage.getItem("services")); // Hae palvelut
+
+    var sessionDataDiv = document.getElementById("sessiondata");
+    sessionDataDiv.innerHTML = ""; // Tyhjennä aiemmat tiedot
+
+    // Jos tietoja on tallennettu, näytetään ne
+    if (destination || arrival || services) {
+        var output = "<h3>Saved Data:</h3>"; // Otsikko tallennetuille tiedoille
+        if (destination) {
+            output += "<p><strong>Destination:</strong> " + destination + "</p>";
+        }
+        if (arrival) {
+            output += "<p><strong>Arrival Date:</strong> " + arrival + "</p>";
+        }
+        if (services && services.length > 0) {
+            output += "<p><strong>Services:</strong> " + services.join(", ") + "</p>";
+        }
+        sessionDataDiv.innerHTML = output; // Näytetään tiedot
+    }
+}
+
+
+        // Tämä funktio tallentaa tiedot sessionStorageen
+        function saveToSessionStorage() {
+            var sessionDestination = document.getElementById("sessionDestination").value; // Hae session määränpää
+            var sessionArrival = document.getElementById("sessionArrival").value; // Hae session saapumispäivämäärä
+
+            var sessionServices = []; // Tyhjennetään palvelut-taulukko
+            var checkboxes = document.querySelectorAll('input[name="sessionCheckboxGroup"]:checked'); // Hae valitut palvelut
+            checkboxes.forEach((checkbox) => {
+                sessionServices.push(checkbox.value); // Lisää valitut palvelut taulukkoon
+            });
+
+            // Tallenna tiedot sessionStorageen
+            sessionStorage.setItem("sessionDestination", sessionDestination);
+            sessionStorage.setItem("sessionArrival", sessionArrival);
+            sessionStorage.setItem("sessionServices", JSON.stringify(sessionServices));
+
+            alert("Data saved to sessionStorage!"); // Ilmoita käyttäjälle
+            loadSessionStorageData(); // Lataa tallennetut tiedot heti
+        }
+
+        // Tämä funktio lataa sessionStorage tiedot
+        function loadSessionStorageData() {
+            var sessionDestination = sessionStorage.getItem("sessionDestination"); // Hae session määränpää
+            var sessionArrival = sessionStorage.getItem("sessionArrival"); // Hae session saapumispäivämäärä
+            var sessionServices = JSON.parse(sessionStorage.getItem("sessionServices")); // Hae palvelut
+
+            var sessionDataDiv = document.getElementById("sessionStorageData");
+            sessionDataDiv.innerHTML = ""; // Tyhjennä ennen uuden datan lataamista
+
+            // Jos tietoja on tallennettu, näytetään ne
+            if (sessionDestination || sessionArrival || sessionServices) {
+                var output = "<h3>Session Storage Data:</h3>"; // Otsikko session tallennetuista tiedoista
+                if (sessionDestination) {
+                    output += "<p><strong>Destination:</strong> " + sessionDestination + "</p>";
+                }
+                if (sessionArrival) {
+                    output += "<p><strong>Arrival Date:</strong> " + sessionArrival + "</p>";
+                }
+                if (sessionServices && sessionServices.length > 0) {
+                    output += "<p><strong>Services:</strong> " + sessionServices.join(", ") + "</p>";
+                }
+                sessionDataDiv.innerHTML = output; // Näytetään tiedot
+            }
+        }
+
+        // TODO-listan toiminnallisuus
+        function addTodo() {
+            var todoInput = document.getElementById("todoInput").value; // Hae tehtävä syötekentästä
+            if (todoInput === "") {
+                alert("Please enter a task"); // Ilmoita, jos syötekenttä on tyhjö
+                return;
+            }
+
+            var todoList = document.getElementById("todoList");
+            var listItem = document.createElement("li"); // Luo uusi lista-alkio
+            listItem.textContent = todoInput; // Aseta syötteen arvo listalle
+            todoList.appendChild(listItem); // Lisää alkio listaan
+
+            saveTodoToLocalStorage(todoInput); // Tallenna tehtävä localStorageen
+
+            document.getElementById("todoInput").value = ""; // Tyhjennä syötekenttä
+        }
+
+        // Tämä funktio tallentaa tehtävän localStorageen
+        function saveTodoToLocalStorage(todo) {
+            var todos = JSON.parse(localStorage.getItem("todos")) || []; // Hae olemassaolevat tehtävät
+            todos.push(todo); // Lisää uusi tehtävä taulukkoon
+            localStorage.setItem("todos", JSON.stringify(todos)); // Tallenna taulukko localStorageen
+        }
+
+        // Tämä funktio lataa kaikki tallennetut tehtävät
+        function loadTodos() {
+            var todos = JSON.parse(localStorage.getItem("todos")) || []; // Hae tallennetut tehtävät
+            var todoList = document.getElementById("todoList");
+
+            // Käy läpi kaikki tallennetut tehtävät ja lisää ne listalle
+            todos.forEach(function(todo) {
+                var listItem = document.createElement("li"); // Luo uusi lista-alkio
+                listItem.textContent = todo; // Aseta tehtävän teksti
+                todoList.appendChild(listItem); // Lisää alkio listaan
+            });
+        }
+
+        // Tämä funktio tyhjentää kaikki tallennetut tehtävät
+        function clearTodos() {
+            localStorage.removeItem("todos"); // Poista kaikki tallennetut tehtävät
+            document.getElementById("todoList").innerHTML = ""; // Tyhjennä lista
+        }
+
+        // Tämä funktio ladataan heti, kun sivu avataan
+        window.onload = function() {
+            loadData(); // Lataa localStorage tiedot
+            loadTodos(); // Lataa tallennetut tehtävät
+            loadSessionStorageData(); // Lataa sessionStorage tiedot
+        };
+    </script>
+</head>
+<body class="ws6" onload="loadData()">
+    <h1>Workshop 6: Using Localstorage</h1>
+    <hr />
+    <h2>Exercise 1: Saving the entered data</h2>
+    <div>
+        <label for="destination">Destination:</label>
+        <input type="text" name="textfield" id="destination"> <!-- Syötekenttä määränpäälle -->
+    </div>
+    <div>
+        <label for="arrival">Arrival Date:</label>
+        <input type="text" name="textfield" id="arrival"> <!-- Syötekenttä saapumispäivämäärälle -->
+    </div>
+    <div id="services" class="border">
+        <p>Services:</p>
+        <div><label><input type="checkbox" name="CheckboxGroup1" value="Internet">Internet</label></div>
+        <div><label><input type="checkbox" name="CheckboxGroup1" value="AC">Air Conditioning</label></div>
+        <div><label><input type="checkbox" name="CheckboxGroup1" value="minibar">Minibar</label></div>
+        <div><label><input type="checkbox" name="CheckboxGroup1" value="car">Car rent</label></div>
+        <div><label><input type="checkbox" name="CheckboxGroup1" value="sauna">Sauna</label></div>
+    </div>  
+    <div class="clear">
+        <p><input type="button" name="button" id="button" value="Reserve" onclick="getData()"></p> <!-- Nappi tietojen tallentamiseksi -->
+    </div>
+    <hr/>
+    <div>
+        <h2>Exercise 2: Reloading the saved data</h2>
+        <div id="sessiondata">Session data goes here!</div> <!-- Näyttö alue tallennettuille tiedoille -->
+    </div>
+    <hr/>
+    <div>
+        <h2>Exercise 3: Sessionstorage vs. localstorage</h2>
+        <div>
+            <label for="sessionDestination">Session Destination:</label>
+            <input type="text" id="sessionDestination"> <!-- Syötekenttä session määränpäälle -->
+            <label for="sessionArrival">Session Arrival:</label>
+            <input type="text" id="sessionArrival"> <!-- Syötekenttä session saapumispäivämäärälle -->
+            <div>
+                <label><input type="checkbox" name="sessionCheckboxGroup" value="Session Service 1">Session Service 1</label>
+                <label><input type="checkbox" name="sessionCheckboxGroup" value="Session Service 2">Session Service 2</label>
+            </div>
+            <button onclick="saveToSessionStorage()">Save to Session Storage</button> <!-- Nappi session tietojen tallentamiseksi -->
+            <div id="sessionStorageData">Session storage data goes here!</div> <!-- Näyttö alue session tallennettuille tiedoille -->
+        </div>
+    </div>
+    <hr/>
+    <div>
+        <h2>Exercise 4: TODO List</h2>
+        <div>
+            <input type="text" id="todoInput" placeholder="Enter a task"> <!-- Syötekenttä tehtävän syöttämiseksi -->
+            <button onclick="addTodo()">Add Task</button> <!-- Nappi uuden tehtävän lisäämiseksi -->
+            <button onclick="clearTodos()">Clear All Tasks</button> <!-- Nappi kaikkien tehtävien tyhjentämiseksi -->
+        </div>
+        <ul id="todoList"></ul> <!-- Tehtävälista -->
+    </div>
+</body>
+</html>
