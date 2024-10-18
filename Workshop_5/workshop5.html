@@ -1,0 +1,246 @@
+<!DOCTYPE HTML>
+<html lang="fi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Workshop 5: Smart Forms</title>
+    <link rel="stylesheet" href="tyylit.css">
+    <style>
+        /* Perustyyli lomakkeille */
+        .no-border {
+            margin-bottom: 10px;
+        }
+        
+        #feedback {
+            color: red;
+        }
+        
+        #discountMessage {
+            color: green;
+        }
+        
+        #extraField {
+            display: none;
+        }
+    </style>
+    <script>
+        // Harjoitus 1: Contact Form
+        function validateForm(event) {
+            event.preventDefault(); // Estetään lomakkeen lähettäminen
+            const email = document.querySelector('input[name="email"]').value;
+            const comment = document.querySelector('textarea[name="comment"]').value;
+            const feedbackElement = document.getElementById('feedback');
+            let errors = false;
+
+            // Tyhjennetään aikaisemmat virheviestit
+            feedbackElement.innerHTML = '';
+
+            // Tarkistetaan sähköpostin pituus ja sisältö
+            if (email.length < 6 || email.length > 15 || !email.includes('@')) {
+                feedbackElement.innerHTML += 'Virheellinen sähköpostiosoite.<br>';
+                errors = true;
+                document.querySelector('input[name="email"]').style.borderColor = 'red';
+            } else {
+                document.querySelector('input[name="email"]').style.borderColor = '';
+            }
+
+            // Tarkistetaan kommenttikenttä
+            if (!comment.trim()) {
+                feedbackElement.innerHTML += 'Kommenttikenttä ei voi olla tyhjää.<br>';
+                errors = true;
+                document.querySelector('textarea[name="comment"]').style.borderColor = 'red';
+            } else if (comment.length > 50) {
+                feedbackElement.innerHTML += 'Kommentti voi olla enintään 50 merkkiä.<br>';
+                errors = true;
+                document.querySelector('textarea[name="comment"]').style.borderColor = 'red';
+            } else {
+                document.querySelector('textarea[name="comment"]').style.borderColor = '';
+            }
+
+            // Jos ei ole virheitä, näytetään syötteet
+            if (!errors) {
+                alert(`Sähköpostiosoite: ${email}\nKommentti: ${comment}`);
+            }
+        }
+
+        // Harjoitus 2: Membership Calculator
+        function calculateMembership(event) {
+            event.preventDefault(); // Estetään lomakkeen lähettäminen
+            const type = document.getElementById('type').value;
+            const years = parseInt(document.getElementById('years').value);
+            const costField = document.getElementById('cost');
+            let cost = 0;
+            let discountMessage = '';
+
+            switch (type) {
+                case 'basic':
+                    cost = 10;
+                    break;
+                case 'premium':
+                    cost = 15;
+                    break;
+                case 'gold':
+                    cost = 20;
+                    break;
+                case 'platinum':
+                    cost = 25;
+                    break;
+            }
+
+            let totalCost = cost * years;
+
+            // Tarkistetaan alennukset
+            if (years > 2) {
+                totalCost *= 0.8; // 20% alennus
+                discountMessage = 'Olet oikeutettu 20% alennukseen!';
+            }
+            if (years >= 5) {
+                totalCost -= 5; // 5€ lisäalennus
+                discountMessage += ' Saat myös 5€ lisäalennuksen!';
+            }
+
+            costField.value = totalCost.toFixed(2);
+            document.getElementById('discountMessage').innerText = discountMessage;
+        }
+
+        // Harjoitus 3: Book Order
+        function calculateOrder() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const price = parseFloat(document.getElementById('price').value);
+            const tax = parseFloat(document.getElementById('tax').value) / 100;
+            let discount = parseFloat(document.getElementById('discount').value);
+            
+            let total = quantity * price * (1 + tax) - discount;
+
+            // Kaksoisalennus, jos määrä on yli 100
+            if (quantity > 100) {
+                discount *= 2;
+            }
+
+            total -= discount; // Vähennetään alennus
+            document.getElementById('total').value = total.toFixed(2);
+        }
+
+        // Harjoitus 4: Hidden Extra fields
+        function showExtraField() {
+            const contactMethod = document.getElementById('contactMethod').value;
+            const extraField = document.getElementById('extraField');
+            if (contactMethod) {
+                extraField.style.display = 'block';
+                extraField.querySelector('label').innerText = `Enter details for ${contactMethod}:`;
+            } else {
+                extraField.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Workshop 5: Smart Forms</h1>
+    
+    <h2>Exercise 1: Contact Form</h2>
+    <form onsubmit="validateForm(event)">
+        <div class="no-border">
+            <label>Email address:<br>
+                <input type="text" name="email">
+            </label>
+        </div>
+        <div class="no-border">
+            <label>
+                Comment:<br>
+            </label>
+            <textarea name="comment"></textarea>
+        </div>
+        <div id="feedback"></div>
+        <br>
+        <input type="submit" value="Send">
+    </form>
+
+    <h2>Exercise 2: Membership Calculator</h2>
+    <form action="#" method="post" id="theForm" onsubmit="calculateMembership(event)">
+        <fieldset>
+            <legend>Create Your Membership</legend>
+            <p>Complete this form to calculate your membership. There's a 20% discount if you enroll for more than one year!</p>
+            <div>
+                <label for="type">Type</label>
+                <select name="type" id="type" size="4" required>
+                    <option value="basic">Basic - €10.00</option>
+                    <option value="premium">Premium - €15.00</option>
+                    <option value="gold">Gold - €20.00</option>
+                    <option value="platinum">Platinum - €25.00</option>
+                </select>
+            </div>
+            <div>
+                <label for="years">Years</label>
+                <input type="number" name="years" id="years" min="1" required>
+            </div>
+            <div>
+                <label for="cost">Cost</label>
+                <input type="text" name="cost" id="cost" disabled>
+            </div>
+            <div id="discountMessage"></div>
+            <input type="submit" value="Calculate" id="submit">
+        </fieldset>
+    </form>
+
+    <h2>Exercise 3: Book Order</h2>
+    <fieldset>
+        <p>Calculate a bulk book order.</p>
+        <div>
+            <label for="quantity">Quantity</label>
+            <input type="number" name="quantity" id="quantity" value="1" min="1" required>
+        </div>
+        <div>
+            <label for="price">Price Per Unit</label>
+            <input type="text" name="price" id="price" value="1.00" required>
+        </div>
+        <div>
+            <label for="tax">VAT (%)</label>
+            <input type="text" name="tax" id="tax" value="0.0" required>
+        </div>
+        <div>
+            <label for="discount">Discount</label>
+            <input type="text" name="discount" id="discount" value="0.00" required>
+        </div>
+        <div>
+            <label for="total">Total</label>
+            <input type="text" name="total" id="total" value="0.00" disabled>
+        </div>
+        <div>
+            <input type="button" value="Calculate" id="submit-calculate" onClick="calculateOrder()">
+        </div>
+    </fieldset>
+
+    <h2>Exercise 4: Hidden Extra Fields</h2>
+    <form onsubmit="validateForm(event)">
+        <div class="no-border">
+            <label>Email address:<br>
+                <input type="text" name="email">
+            </label>
+        </div>
+        <div class="no-border">
+            <label>
+                Comment:<br>
+            </label>
+            <textarea name="comment"></textarea>
+        </div>
+        <div class="no-border">
+            <label for="contactMethod">Preferred Contact Method:</label>
+            <select id="contactMethod" onchange="showExtraField()">
+                <option value="">Select</option>
+                <option value="email">Email</option>
+                <option value="phone">Phone</option>
+                <option value="sms">SMS</option>
+            </select>
+        </div>
+        <div id="extraField">
+            <label></label>
+            <input type="text" name="extraContactInfo">
+        </div>
+        <div id="feedback"></div>
+        <br>
+        <input type="submit" value="Send">
+    </form>
+</body>
+
+</html>
